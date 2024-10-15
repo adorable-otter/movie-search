@@ -1,0 +1,37 @@
+body {
+    margin: 0;
+}
+
+.header {
+    background-color: black;
+    color: aliceblue;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.content {
+    background-color: lightgray;
+}
+
+.content__list {
+    padding: 40px 0 0 0;
+    margin: 0;
+}
+
+.card-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    list-style: none;
+}
+
+.card__img {
+    background-image: url('img.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 200px;
+    height: 300px;
+    border-radius: 4px;
+}
