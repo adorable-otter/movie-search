@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>영화 검색</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="modal.css" />
   </head>
   <body>
     <header class="header">
@@ -26,6 +27,18 @@
         </li> -->
       </ul>
     </main>
+
+    <div class="back-drop hidden" data-name="movie-detail">
+      <div class="dialog">
+        <button class="modal-close"></button>
+        <div class="detail-img" data-name="detail-img"></div>
+        <div class="overview" data-name="overview"></div>
+        <div class="release-date" data-name="release-date"></div>
+        <div class="rating" data-name="detail-rating"></div>
+        <button class="" data-name="add-bookmark"></button>
+        <div data-selected-movie-id="" style="display: none;"></div>
+      </div>
+    </div>
 
     <script src="script.js" type="module"></script>
   </body>
