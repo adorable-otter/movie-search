@@ -6,6 +6,7 @@
     <title>영화 검색</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="modal.css" />
+    <link rel="stylesheet" href="card.css" />
   </head>
   <body>
     <header class="header">
@@ -26,12 +27,13 @@
 
     <div class="back-drop hidden" data-name="movie-detail">
       <div class="dialog">
-        <div class="card">
-          <button class="card__close"></button>
+        <button class="dialog__close" data-name="dialog-close">닫기</button>
+        <div class="card card_large">
           <div class="card__img card__img_large" data-name="detail-img"></div>
-          <div class="card__overview" data-name="overview"></div>
-          <div class="card__release" data-name="release-date"></div>
-          <div class="card__rating" data-name="detail-rating"></div>
+          <h2 class="card__title" data-name="detail-title"></h2>
+          <p class="card__overview" data-name="overview"></p>
+          <time class="card__release" data-name="release-date"></time>
+          <span class="card__rating" data-name="detail-rating"></span>
           <button class="" data-name="add-bookmark"></button>
           <div data-selected-movie-id="" style="display: none"></div>
         </div>

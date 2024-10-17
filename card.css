@@ -1,0 +1,37 @@
+.card-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    list-style: none;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+}
+
+.card_large{
+    width: 500px;
+}
+
+.card__img {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    padding-top: 140%;
+    border-radius: 4px;
+    align-self: center;
+    margin-bottom: 5px;
+}
+
+.card__title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.card__overview {
+    margin: 0 10px 5px;
+}

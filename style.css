@@ -2,6 +2,10 @@ body {
     margin: 0;
 }
 
+.dialog::-webkit-scrollbar {
+    display: none;
+}
+
 .header {
     background-color: black;
     color: aliceblue;
@@ -14,42 +18,20 @@ body {
 
 .header__search {
     width: 70%;
-    height: 40px;
+    height: 50px;
     border-radius: 4px;
+    font-size: 1.2rem;
+    padding-left: 10px;
+    margin-bottom: 10px;
 }
 
 .content {
+    display: flex;
+    justify-content: center;
     background-color: lightgray;
 }
 
 .content__list {
     padding: 40px 0 0 0;
     margin: 0;
-}
-
-.card-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-    list-style: none;
-}
-
-.card {
-    display: flex;
-    flex-direction: column;
-}
-
-.card__img {
-    background-repeat: no-repeat;
-    background-size: cover;
-    width: 200px;
-    height: 300px;
-    border-radius: 4px;
-    align-self: center;
-}
-
-.card__img_large {
-    width: 400px;
-    height: 600px;
 }
