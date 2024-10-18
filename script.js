@@ -6,7 +6,7 @@ const options = {
   headers: {
     accept: 'application/json',
     Authorization:
-      'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3MTQ4MjNlNGVkODg2YWM5OWRjZTEwMjFkYzdlZTM4ZSIsIm5iZiI6MTcyOTE0NDgyMi44OTc2NTQsInN1YiI6IjY3MGRjN2YzNDJlMTM5MWM1NjY2ZTEyNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Ae-fHFgd6y6JtDn7AeJVDcRzIFGcC72wC2JHBVyw0XE',
+      'Bearer ',
   },
 };
 
@@ -22,22 +22,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const showPopMovieList = async () => {
   const $cardList = document.querySelector('ul');
-  const response = await fetch(
-    'https://api.themoviedb.org/3/movie/popular?language=ko&page=1',
-    options
-  );
-  if (response.ok) {
-    const results = (await response.json()).results;
-    results?.forEach((result) => {
-      $cardList.appendChild(createMovieCard(snakeToCamelObj(result)));
-    });
-  } else {
-    alert('데이터를 가져오는데 실패했습니다.');
-  }
+  const url = 'https://api.themoviedb.org/3/movie/popular?language=ko&page=1';
+  const results = await requestDataList(url);
+  results?.forEach((result) => {
+    $cardList.appendChild(createMovieCard(snakeToCamelObj(result)));
+  });
 };
 
 const handleBackDropClick = (e) => {
-  if (e.target === $backDrop || e.target.dataset.name === 'dialog-close') toggleModal();
+  if (e.target === e.currentTarget || e.target.dataset.name === 'dialog-close') toggleModal();
 };
 
 const handleSearchFormSubmit = (e) => {
@@ -47,17 +40,10 @@ const handleSearchFormSubmit = (e) => {
 
 const showMovieDetail = async (e) => {
   const movieId = e.target.closest('li').dataset.id;
-  const response = await fetch(
-    `https://api.themoviedb.org/3/movie/${movieId}?language=ko`,
-    options
-  );
-  if (response.ok) {
-    const result = await response.json();
-    setModalData(snakeToCamelObj(result));
-    toggleModal();
-  } else {
-    alert('데이터를 가져오는데 실패했습니다.');
-  }
+  const url = `https://api.themoviedb.org/3/movie/${movieId}?language=ko`;
+  const result = await requestData(url);
+  setModalData(snakeToCamelObj(result));
+  toggleModal();
 };
 
 const setModalData = ({ posterPath, overview, releaseDate, voteAverage, id, title }) => {
@@ -104,19 +90,12 @@ const createMovieCard = ({ title, id, voteAverage, posterPath }) => {
 const showSearchedMovieList = async () => {
   const $cardList = document.querySelector('ul');
   const searchKey = document.querySelector('[name=searchKey]').value;
-  const response = await fetch(
-    `https://api.themoviedb.org/3/search/movie?query=${searchKey}&include_adult=false&language=ko&page=1`,
-    options
-  );
-  if (response.ok) {
-    const results = (await response.json()).results;
-    $cardList.replaceChildren();
-    results?.forEach((result) => {
-      $cardList.appendChild(createMovieCard(snakeToCamelObj(result)));
-    });
-  } else {
-    alert('데이터를 가져오는데 실패했습니다.');
-  }
+  const url = `https://api.themoviedb.org/3/search/movie?query=${searchKey}&include_adult=false&language=ko&page=1`;
+  const results = await requestDataList(url);
+  $cardList.replaceChildren();
+  results?.forEach((result) => {
+    $cardList.appendChild(createMovieCard(snakeToCamelObj(result)));
+  });
 };
 
 const getScrollbarWidth = () => {
@@ -137,4 +116,26 @@ const toggleModal = () => {
     body.paddingRight = getScrollbarWidth();
     body.overflow = 'hidden';
   }
+};
+
+const requestDataList = async (url) => {
+  const response = await fetch(url, options);
+  let results = [];
+  if (response.ok) {
+    results = (await response.json()).results;
+  } else {
+    alert('데이터를 가져오는데 실패했습니다.');
+  }
+  return results;
+};
+
+const requestData = async (url) => {
+  const response = await fetch(url, options);
+  let result = {};
+  if (response.ok) {
+    result = await response.json();
+  } else {
+    alert('데이터를 가져오는데 실패했습니다.');
+  }
+  return result;
 };
