@@ -9,7 +9,7 @@ const snakeToCamelObj = (obj) => {
 };
 
 const snakeToCamel = (str) => {
-  const words = str.split("_");
+  const words = str.split('_');
   const camelCaseWord = words
     .map((word, index) => {
       if (index === 0) {
@@ -19,7 +19,7 @@ const snakeToCamel = (str) => {
       const remainingLetters = word.slice(1);
       return firstLetterCap + remainingLetters;
     })
-    .join("");
+    .join('');
 
   return camelCaseWord;
 };
