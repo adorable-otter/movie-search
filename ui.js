@@ -58,4 +58,17 @@ const setModalData = ({ posterPath, overview, releaseDate, voteAverage, id, titl
   $title.textContent = title;
 };
 
-export { toggleModal, createMovieCard, setModalData };
+const toggleBookmarkBtn = (movieId) => {
+  const $bookmarkBtn = document.querySelector('[data-name=bookmark]');
+  const $bookmarkDelBtn = document.querySelector('[data-name=del-bookmark]');
+  const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '{}');
+  if (bookmarks[movieId]) {
+    $bookmarkBtn.classList.add('hidden');
+    $bookmarkDelBtn.classList.remove('hidden');
+  } else {
+    $bookmarkBtn.classList.remove('hidden');
+    $bookmarkDelBtn.classList.add('hidden');
+  }
+};
+
+export { toggleModal, createMovieCard, setModalData, toggleBookmarkBtn };

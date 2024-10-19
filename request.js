@@ -1,3 +1,5 @@
+import { snakeToCamelObj } from './util.js';
+
 const options = {
   method: 'GET',
   headers: {
@@ -15,7 +17,7 @@ const requestDataList = async (url) => {
   } else {
     alert('데이터를 가져오는데 실패했습니다.');
   }
-  return results;
+  return results.map(snakeToCamelObj);
 };
 
 const requestData = async (url) => {
@@ -26,7 +28,7 @@ const requestData = async (url) => {
   } else {
     alert('데이터를 가져오는데 실패했습니다.');
   }
-  return result;
+  return snakeToCamelObj(result);
 };
 
 export { requestData, requestDataList };
