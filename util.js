@@ -4,7 +4,6 @@ const snakeToCamelObj = (obj) => {
     const camelCaseKey = snakeToCamel(key);
     convertedObject[camelCaseKey] = value;
   }
-
   return convertedObject;
 };
 
@@ -20,8 +19,11 @@ const snakeToCamel = (str) => {
       return firstLetterCap + remainingLetters;
     })
     .join('');
-
   return camelCaseWord;
 };
 
-export { snakeToCamel, snakeToCamelObj };
+const getScrollbarWidth = () => {
+  return window.innerWidth - document.documentElement.clientWidth + 'px';
+};
+
+export { snakeToCamel, snakeToCamelObj, getScrollbarWidth };
