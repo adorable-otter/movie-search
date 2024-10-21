@@ -1,4 +1,5 @@
 import { getScrollbarWidth } from './util.js';
+import { bookmarks } from './bookmark.js';
 
 const IMG_BASE_URL = 'https://image.tmdb.org/t/p';
 
@@ -33,7 +34,7 @@ const createMovieCard = ({ title, id, voteAverage, posterPath }) => {
 
   const cardRating = document.createElement('span');
   cardRating.classList.add('card__rating');
-  cardRating.textContent = voteAverage;
+  cardRating.textContent = voteAverage.toFixed(1);
 
   li.appendChild(cardImg);
   li.appendChild(cardTitle);
@@ -49,26 +50,26 @@ const setModalData = ({ posterPath, overview, releaseDate, voteAverage, id, titl
   const $releaseDate = document.querySelector('[data-name=release-date');
   const $voteAverage = document.querySelector('[data-name=detail-rating');
   const $selectedMovieId = document.querySelector('[data-selected-movie-id');
+  const [year, month, day] = releaseDate.split('-');
 
   $detailImg.style.backgroundImage = `url(${IMG_BASE_URL + imgSize + posterPath})`;
   $overview.textContent = overview;
-  $releaseDate.textContent = releaseDate;
-  $voteAverage.textContent = voteAverage;
+  $releaseDate.textContent = `${year}년 ${Number(month)}월 ${Number(day)}일`;
+  $voteAverage.textContent = voteAverage.toFixed(1);
   $selectedMovieId.textContent = id;
   $title.textContent = title;
 };
 
-const toggleBookmarkBtn = (movieId) => {
+const initBookmarkBtn = (movieId) => {
   const $bookmarkBtn = document.querySelector('[data-name=bookmark]');
-  const $bookmarkDelBtn = document.querySelector('[data-name=del-bookmark]');
-  const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '{}');
-  if (bookmarks[movieId]) {
-    $bookmarkBtn.classList.add('hidden');
-    $bookmarkDelBtn.classList.remove('hidden');
+  const $confirm = document.querySelector('[data-name=confirm]');
+  $bookmarkBtn.classList.remove('hidden');
+  $confirm.classList.add('hidden');
+  if (bookmarks.contains(movieId)) {
+    $bookmarkBtn.classList.add('bookmark_marked');
   } else {
-    $bookmarkBtn.classList.remove('hidden');
-    $bookmarkDelBtn.classList.add('hidden');
+    $bookmarkBtn.classList.remove('bookmark_marked');
   }
 };
 
-export { toggleModal, createMovieCard, setModalData, toggleBookmarkBtn };
+export { toggleModal, createMovieCard, setModalData, initBookmarkBtn };

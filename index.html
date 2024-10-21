@@ -4,15 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>영화 검색</title>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="modal.css" />
-    <link rel="stylesheet" href="card.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/modal.css" />
+    <link rel="stylesheet" href="css/card.css" />
   </head>
   <body>
     <header class="header">
       <h1>영화 검색</h1>
       <form action="" name="search">
-        <input type="search" name="searchKey" class="header__search" placeholder="영화 이름을 입력해주세요." />
+        <input
+          type="search"
+          name="searchKey"
+          class="header__search"
+          placeholder="영화 이름을 입력해주세요."
+        />
       </form>
       <button data-name="show-bookmarks">북마크 보기</button>
     </header>
@@ -33,16 +38,33 @@
         <div class="card card_large">
           <div class="card__img card__img_large" data-name="detail-img"></div>
           <h2 class="card__title" data-name="detail-title"></h2>
+          <hr class="hr-14">
           <p class="card__overview" data-name="overview"></p>
-          <time class="card__release" data-name="release-date"></time>
-          <span class="card__rating" data-name="detail-rating"></span>
-          <button class="hidden" data-name="bookmark">북마크 추가하기</button>
-          <button class="hidden" data-name="del-bookmark">북마크 삭제하기</button>
+          <hr class="hr-14">
+          <div class="card__text">
+            <span class="label">개봉일 :</span>
+            <time data-name="release-date"></time>
+          </div>
+          <div class="card__text">
+            <span class="label">평점 : </span>
+            <span data-name="detail-rating"></span>
+          </div>
           <div data-selected-movie-id="" style="display: none"></div>
+        </div>
+        <div class="bookmark" data-name="bookmark">
+          <div class="bm-img"></div>
+          <span class="bm-msg">북마크</span>
+        </div>
+        <!-- <button class="dialog__btn hidden" data-name="bookmark">북마크 추가하기</button>
+        <button class="dialog__btn hidden" data-name="del-bookmark">북마크 삭제하기</button> -->
+        <div class="confirm hidden" data-name="confirm">
+          <span class="confirm__msg">북마크를 삭제하시겠습니까?</span>
+          <button class="confirm__delete btn" data-name="delete">삭제</button>
+          <button class="confirm__cancel btn" data-name="cancel">취소</button>
         </div>
       </div>
     </div>
 
-    <script src="script.js" type="module"></script>
+    <script src="js/script.js" type="module"></script>
   </body>
 </html>

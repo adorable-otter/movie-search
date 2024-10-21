@@ -1,5 +1,6 @@
 import { requestData, requestDataList } from './request.js';
-import { toggleModal, createMovieCard, setModalData, toggleBookmarkBtn } from './ui.js';
+import { toggleModal, createMovieCard, setModalData, initBookmarkBtn } from './ui.js';
+import { bookmarks } from './bookmark.js';
 
 let selectedMovie;
 
@@ -12,10 +13,14 @@ const addEventListeners = () => {
   const $movieList = document.querySelector('ul');
   const $backDrop = document.querySelector('[data-name=movie-detail]');
   const $showBookmarkBtn = document.querySelector('[data-name=show-bookmarks]');
+  const $confirm = document.querySelector('[data-name=confirm]');
+  const $bookmark = document.querySelector('[data-name=bookmark]');
   $movieList.addEventListener('click', showMovieDetail);
   $backDrop.addEventListener('click', handleModalClick);
   document.forms.search.addEventListener('submit', handleSearchFormSubmit);
   $showBookmarkBtn.addEventListener('click', showBookmarkList);
+  $confirm.addEventListener('click', handleConfirmClick);
+  $bookmark.addEventListener('click', handleBookmarkClick);
 };
 
 const showPopMovieList = async () => {
@@ -28,10 +33,26 @@ const showPopMovieList = async () => {
 const handleModalClick = (e) => {
   if (e.target === e.currentTarget || e.target.dataset.name === 'dialog-close') {
     toggleModal();
-  } else if (e.target.dataset.name === 'bookmark') {
+  }
+};
+
+const handleBookmarkClick = (e) => {
+  const $confirm = document.querySelector('[data-name=confirm]');
+  if (bookmarks.contains(selectedMovie.id)) {
+    e.currentTarget.classList.add('hidden');
+    $confirm.classList.remove('hidden');
+  } else {
     bookmark(selectedMovie);
-  } else if (e.target.dataset.name === 'del-bookmark') {
-    deleteBookmark(selectedMovie.id);
+    initBookmarkBtn(selectedMovie.id);
+  }
+};
+
+const handleConfirmClick = (e) => {
+  if (e.target.dataset.name === 'delete') {
+    bookmarks.delete(selectedMovie.id);
+    initBookmarkBtn(selectedMovie.id);
+  } else if (e.target.dataset.name === 'cancel') {
+    initBookmarkBtn(selectedMovie.id);
   }
 };
 
@@ -46,7 +67,7 @@ const showMovieDetail = async (e) => {
   selectedMovie = await requestData(url);
   setModalData(selectedMovie);
   toggleModal();
-  toggleBookmarkBtn(movieId);
+  initBookmarkBtn(movieId);
 };
 
 const showSearchedMovieList = async () => {
@@ -60,20 +81,11 @@ const showSearchedMovieList = async () => {
 
 const showBookmarkList = () => {
   const $cardList = document.querySelector('ul');
-  const results = JSON.parse(localStorage.getItem('bookmarks') || '{}');
+  const results = bookmarks.getContents();
   $cardList.replaceChildren();
   Object.values(results)?.forEach((result) => $cardList.appendChild(createMovieCard(result)));
 };
 
 const bookmark = ({ posterPath, overview, releaseDate, voteAverage, id, title }) => {
-  const movie = { posterPath, overview, releaseDate, voteAverage, id, title };
-  const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '{}');
-  bookmarks[id] = movie;
-  localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-};
-
-const deleteBookmark = (movieId) => {
-  const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '{}');
-  delete bookmarks[movieId];
-  localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+  bookmarks.add({ posterPath, overview, releaseDate, voteAverage, id, title });
 };
