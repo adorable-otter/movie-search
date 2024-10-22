@@ -5,8 +5,10 @@ const IMG_BASE_URL = 'https://image.tmdb.org/t/p';
 
 const toggleModal = () => {
   const $modal = document.querySelector('[data-name=movie-detail]');
+  const $dialog = document.querySelector('[data-name=dialog]');
   const body = document.body.style;
   $modal.classList.toggle('hidden');
+  $dialog.scrollTop = 0;
   if ($modal.classList.contains('hidden')) {
     // body의 스크롤 바를 보여준다.
     body.paddingRight = '';
