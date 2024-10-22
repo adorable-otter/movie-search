@@ -6,20 +6,20 @@ let selectedMovie;
 
 document.addEventListener('DOMContentLoaded', () => {
   addEventListeners();
-  navigate('popMovies');
+  navigate(location.pathname);
 });
 
-const navigate = (address) => {
-  const navigation = {
-    bookmarks: showBookmarkList,
-    popMovies: showPopMovieList,
-    search: showSearchedMovieList,
+const navigate = (pathName) => {
+  const paths = {
+    '/': showPopMovieList,
+    '/bookmarks': showBookmarkList,
+    '/popMovies': showPopMovieList,
+    '/search': showSearchedMovieList,
   };
-  const pathName = '/' + address;
   if (pathName === '/' || location.pathname !== pathName) {
-    history.pushState({ address }, null, location.origin + pathName);
+    history.pushState({ pathName }, null, location.origin + pathName);
   }
-  navigation[address]();
+  paths[pathName]();
 };
 
 const addEventListeners = () => {
@@ -31,10 +31,10 @@ const addEventListeners = () => {
   $movieList.addEventListener('click', showMovieDetail);
   $backDrop.addEventListener('click', handleModalClick);
   document.forms.search.addEventListener('submit', handleSearchFormSubmit);
-  $showBookmarkBtn.addEventListener('click', () => navigate('bookmarks'));
+  $showBookmarkBtn.addEventListener('click', () => navigate('/bookmarks'));
   $confirm.addEventListener('click', handleConfirmClick);
   $bookmark.addEventListener('click', handleBookmarkClick);
-  window.addEventListener('popstate', (e) => navigate(e.state.address));
+  window.addEventListener('popstate', (e) => navigate(e.state.pathName));
 };
 
 const handleModalClick = (e) => {
@@ -65,7 +65,7 @@ const handleConfirmClick = (e) => {
 
 const handleSearchFormSubmit = (e) => {
   e.preventDefault();
-  navigate('search');
+  navigate('/search');
 };
 
 const showPopMovieList = async () => {
