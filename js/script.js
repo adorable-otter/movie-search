@@ -6,8 +6,21 @@ let selectedMovie;
 
 document.addEventListener('DOMContentLoaded', () => {
   addEventListeners();
-  showPopMovieList();
+  navigate('popMovies');
 });
+
+const navigate = (address) => {
+  const navigation = {
+    bookmarks: showBookmarkList,
+    popMovies: showPopMovieList,
+    search: showSearchedMovieList,
+  };
+  const pathName = '/' + address;
+  if (pathName === '/' || location.pathname !== pathName) {
+    history.pushState({ address }, null, location.origin + pathName);
+  }
+  navigation[address]();
+};
 
 const addEventListeners = () => {
   const $movieList = document.querySelector('ul');
@@ -18,16 +31,10 @@ const addEventListeners = () => {
   $movieList.addEventListener('click', showMovieDetail);
   $backDrop.addEventListener('click', handleModalClick);
   document.forms.search.addEventListener('submit', handleSearchFormSubmit);
-  $showBookmarkBtn.addEventListener('click', showBookmarkList);
+  $showBookmarkBtn.addEventListener('click', () => navigate('bookmarks'));
   $confirm.addEventListener('click', handleConfirmClick);
   $bookmark.addEventListener('click', handleBookmarkClick);
-};
-
-const showPopMovieList = async () => {
-  const $cardList = document.querySelector('ul');
-  const url = 'https://api.themoviedb.org/3/movie/popular?language=ko&page=1';
-  const results = await requestDataList(url);
-  results?.forEach((result) => $cardList.appendChild(createMovieCard(result)));
+  window.addEventListener('popstate', (e) => navigate(e.state.address));
 };
 
 const handleModalClick = (e) => {
@@ -58,10 +65,19 @@ const handleConfirmClick = (e) => {
 
 const handleSearchFormSubmit = (e) => {
   e.preventDefault();
-  showSearchedMovieList();
+  navigate('search');
+};
+
+const showPopMovieList = async () => {
+  const $cardList = document.querySelector('ul');
+  const url = 'https://api.themoviedb.org/3/movie/popular?language=ko&page=1';
+  const results = await requestDataList(url);
+  $cardList.replaceChildren();
+  results?.forEach((result) => $cardList.appendChild(createMovieCard(result)));
 };
 
 const showMovieDetail = async (e) => {
+  if (e.target === e.currentTarget) return;
   const movieId = e.target.closest('li').dataset.id;
   const url = `https://api.themoviedb.org/3/movie/${movieId}?language=ko`;
   selectedMovie = await requestData(url);
