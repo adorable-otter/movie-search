@@ -28,13 +28,25 @@ const addEventListeners = () => {
   const $showBookmarkBtn = document.querySelector('[data-name=show-bookmarks]');
   const $confirm = document.querySelector('[data-name=confirm]');
   const $bookmark = document.querySelector('[data-name=bookmark]');
+  const $searchInput = document.querySelector('[name=searchKey]');
+  window.addEventListener('popstate', (e) => navigate(e.state.pathName));
+  document.forms.search.addEventListener('submit', handleSearchFormSubmit);
   $movieList.addEventListener('click', showMovieDetail);
   $backDrop.addEventListener('click', handleModalClick);
-  document.forms.search.addEventListener('submit', handleSearchFormSubmit);
   $showBookmarkBtn.addEventListener('click', () => navigate('/bookmarks'));
   $confirm.addEventListener('click', handleConfirmClick);
   $bookmark.addEventListener('click', handleBookmarkClick);
-  window.addEventListener('popstate', (e) => navigate(e.state.pathName));
+  $searchInput.addEventListener('input', debouncer(showSearchedMovieList, 300));
+};
+
+// 이벤트가 발생하면 timeout 뒤에 콜백을 실행한다.
+// timeout 사이에 이벤트가 발생한다면 기존 타이머를 삭제하고 새 타이머를 시작한다.
+const debouncer = (callback, timeout) => {
+  let timer;
+  return () => {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(callback, timeout);
+  };
 };
 
 const handleModalClick = (e) => {
