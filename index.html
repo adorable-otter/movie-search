@@ -11,7 +11,7 @@
   <body>
     <header class="header">
       <h1>영화 검색</h1>
-      <form action="" name="search">
+      <form class="header__form" action="" name="search">
         <input
           type="search"
           name="searchKey"
@@ -19,21 +19,16 @@
           placeholder="영화 이름을 입력해주세요."
         />
       </form>
-      <button data-name="show-bookmarks">북마크 보기</button>
+      <button class="header__show-bm" data-name="show-bookmarks">북마크 보기</button>
     </header>
 
     <main class="content">
       <ul class="content__list card-list">
-        <!-- <li class="card">
-          <div class="card__img" style="background-image: url();"></div>
-          <div class="card__title">title</div>
-          <div class="card__rating">5.0</div>
-        </li> -->
       </ul>
     </main>
 
     <div class="back-drop hidden" data-name="movie-detail">
-      <div class="dialog">
+      <div class="dialog" data-name="dialog">
         <button class="dialog__close" data-name="dialog-close">닫기</button>
         <div class="card card_large">
           <div class="card__img card__img_large" data-name="detail-img"></div>
@@ -55,8 +50,6 @@
           <div class="bm-img"></div>
           <span class="bm-msg">북마크</span>
         </div>
-        <!-- <button class="dialog__btn hidden" data-name="bookmark">북마크 추가하기</button>
-        <button class="dialog__btn hidden" data-name="del-bookmark">북마크 삭제하기</button> -->
         <div class="confirm hidden" data-name="confirm">
           <span class="confirm__msg">북마크를 삭제하시겠습니까?</span>
           <button class="confirm__delete btn" data-name="delete">삭제</button>
