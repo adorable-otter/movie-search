@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   navigate(location.pathname);
 });
 
-const navigate = (pathName) => {
+const navigate = (pathName, data = {}) => {
   const paths = {
     '/': showPopMovieList,
     '/bookmarks': showBookmarkList,
@@ -17,9 +17,19 @@ const navigate = (pathName) => {
     '/search': showSearchedMovieList,
   };
   if (pathName === '/' || location.pathname !== pathName) {
-    history.pushState({ pathName }, null, location.origin + pathName);
+    history.pushState({ pathName, data }, null, location.origin + pathName);
   }
-  paths[pathName]();
+  initPage(pathName);
+  paths[pathName](data);
+};
+
+const initPage = (pathName) => {
+  const $cardList = document.querySelector('ul');
+  const $searchInput = document.querySelector('[name=searchKey]');
+  if (pathName !== '/search') {
+    $searchInput.value = '';
+  }
+  $cardList.replaceChildren();
 };
 
 const addEventListeners = () => {
@@ -29,23 +39,24 @@ const addEventListeners = () => {
   const $confirm = document.querySelector('[data-name=confirm]');
   const $bookmark = document.querySelector('[data-name=bookmark]');
   const $searchInput = document.querySelector('[name=searchKey]');
-  window.addEventListener('popstate', (e) => navigate(e.state.pathName));
-  document.forms.search.addEventListener('submit', handleSearchFormSubmit);
+  window.addEventListener('popstate', (e) => navigate(e.state.pathName, e.state.data));
+  document.forms.search.addEventListener('submit', debounce(handleSearchEvent, 400));
   $movieList.addEventListener('click', showMovieDetail);
   $backDrop.addEventListener('click', handleModalClick);
   $showBookmarkBtn.addEventListener('click', () => navigate('/bookmarks'));
   $confirm.addEventListener('click', handleConfirmClick);
   $bookmark.addEventListener('click', handleBookmarkClick);
-  $searchInput.addEventListener('input', debouncer(showSearchedMovieList, 300));
+  $searchInput.addEventListener('input', debounce(handleSearchEvent, 400));
 };
 
 // 이벤트가 발생하면 timeout 뒤에 콜백을 실행한다.
 // timeout 사이에 이벤트가 발생한다면 기존 타이머를 삭제하고 새 타이머를 시작한다.
-const debouncer = (callback, timeout) => {
+const debounce = (callback, timeout) => {
   let timer;
-  return () => {
+  return (e) => {
+    e.preventDefault();
     if (timer) clearTimeout(timer);
-    timer = setTimeout(callback, timeout);
+    timer = setTimeout(callback, timeout, e);
   };
 };
 
@@ -75,16 +86,15 @@ const handleConfirmClick = (e) => {
   }
 };
 
-const handleSearchFormSubmit = (e) => {
-  e.preventDefault();
-  navigate('/search');
+const handleSearchEvent = (e) => {
+  const searchKey = document.querySelector('[name=searchKey]').value;
+  navigate('/search', { searchKey });
 };
 
 const showPopMovieList = async () => {
   const $cardList = document.querySelector('ul');
   const url = 'https://api.themoviedb.org/3/movie/popular?language=ko&page=1';
   const results = await requestDataList(url);
-  $cardList.replaceChildren();
   results?.forEach((result) => $cardList.appendChild(createMovieCard(result)));
 };
 
@@ -98,19 +108,18 @@ const showMovieDetail = async (e) => {
   initBookmarkBtn(movieId);
 };
 
-const showSearchedMovieList = async () => {
+const showSearchedMovieList = async ({ searchKey }) => {
   const $cardList = document.querySelector('ul');
-  const searchKey = document.querySelector('[name=searchKey]').value;
+  document.querySelector('[name=searchKey]').value = searchKey;
   const url = `https://api.themoviedb.org/3/search/movie?query=${searchKey}&include_adult=false&language=ko&page=1`;
   const results = await requestDataList(url);
-  $cardList.replaceChildren();
   results?.forEach((result) => $cardList.appendChild(createMovieCard(result)));
+  console.log('실행');
 };
 
 const showBookmarkList = () => {
   const $cardList = document.querySelector('ul');
   const results = bookmarks.getContents();
-  $cardList.replaceChildren();
   Object.values(results)?.forEach((result) => $cardList.appendChild(createMovieCard(result)));
 };
 
