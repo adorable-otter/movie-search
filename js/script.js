@@ -3,12 +3,21 @@ import { toggleModal, createMovieCard, setModalData, initBookmarkBtn } from './u
 import { bookmarks } from './bookmark.js';
 
 let selectedMovie;
-let page = 1;
 
 document.addEventListener('DOMContentLoaded', () => {
   addEventListeners();
   navigate(location.pathname, {});
 });
+
+const route = (path) => {
+  const paths = {
+    '/': showPopMovieList,
+    '/bookmarks': showBookmarkList,
+    '/popMovies': showPopMovieList,
+    '/search': showSearchedMovieList,
+  };
+  return paths[path];
+};
 
 const navigate = (pathToMove, data = {}) => {
   if (location.pathname === pathToMove) {
@@ -17,7 +26,7 @@ const navigate = (pathToMove, data = {}) => {
     history.pushState({ pathToMove, data }, null, location.origin + pathToMove);
   }
   initPage(pathToMove);
-  paths[pathToMove](data);
+  route(pathToMove)(data);
 };
 
 const initPage = (pathName) => {
@@ -26,7 +35,7 @@ const initPage = (pathName) => {
   if (pathName !== '/search') {
     $searchInput.value = '';
   }
-  page = 1;
+  pageSelector.init();
   $cardList.replaceChildren();
 };
 
@@ -91,7 +100,7 @@ const handleSearchEvent = (e) => {
 
 const showPopMovieList = async () => {
   const $cardList = document.querySelector('ul');
-  const url = `https://api.themoviedb.org/3/movie/popular?language=ko&page=${page}`;
+  const url = `https://api.themoviedb.org/3/movie/popular?language=ko&page=${pageSelector.next()}}`;
   const results = await requestDataList(url);
   results?.forEach((result) => $cardList.appendChild(createMovieCard(result)));
   $cardList.lastChild && observer.observe($cardList.lastChild);
@@ -110,7 +119,7 @@ const showMovieDetail = async (e) => {
 const showSearchedMovieList = async ({ searchKey }) => {
   const $cardList = document.querySelector('ul');
   document.querySelector('[name=searchKey]').value = searchKey;
-  const url = `https://api.themoviedb.org/3/search/movie?query=${searchKey}&include_adult=false&language=ko&page=${page}`;
+  const url = `https://api.themoviedb.org/3/search/movie?query=${searchKey}&include_adult=false&language=ko&page=${pageSelector.next()}`;
   const results = await requestDataList(url);
   results?.forEach((result) => $cardList.appendChild(createMovieCard(result)));
   $cardList.lastChild && observer.observe($cardList.lastChild);
@@ -126,22 +135,26 @@ const bookmark = ({ posterPath, overview, releaseDate, voteAverage, id, title })
   bookmarks.add({ posterPath, overview, releaseDate, voteAverage, id, title });
 };
 
-const paths = {
-  '/': showPopMovieList,
-  '/bookmarks': showBookmarkList,
-  '/popMovies': showPopMovieList,
-  '/search': showSearchedMovieList,
-};
-
 const observer = new IntersectionObserver(
   (entries, observer) => {
     const searchKey = document.querySelector('[name=searchKey]').value;
     const entry = entries[0];
     if (entry.isIntersecting) {
-      page++;
-      paths[location.pathname]({ searchKey });
+      route(location.pathname)({ searchKey });
       observer.unobserve(entry.target);
     }
   },
   { threshold: 0.8 }
 );
+
+const pageSelector = (() => {
+  let page = 0;
+  return {
+    next() {
+      return ++page;
+    },
+    init() {
+      page = 0;
+    },
+  };
+})();
