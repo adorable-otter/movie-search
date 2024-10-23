@@ -6,20 +6,19 @@ let selectedMovie;
 
 document.addEventListener('DOMContentLoaded', () => {
   addEventListeners();
-  navigate(location.pathname, {}, false, true);
+  navigate(location.pathname, {});
 });
 
-const navigate = (pathToMove, data = {}, isPop = false, isInitialLoad = false) => {
+const navigate = (pathToMove, data = {}) => {
   const paths = {
     '/': showPopMovieList,
     '/bookmarks': showBookmarkList,
     '/popMovies': showPopMovieList,
     '/search': showSearchedMovieList,
   };
-
-  if (isInitialLoad) {
+  if (location.pathname === pathToMove) {
     history.replaceState({ pathToMove, data }, null, location.origin + pathToMove);
-  } else if (isInitialLoad || (!isPop && location.pathname !== pathToMove)) {
+  } else {
     history.pushState({ pathToMove, data }, null, location.origin + pathToMove);
   }
   initPage(pathToMove);
@@ -42,7 +41,7 @@ const addEventListeners = () => {
   const $confirm = document.querySelector('[data-name=confirm]');
   const $bookmark = document.querySelector('[data-name=bookmark]');
   const $searchInput = document.querySelector('[name=searchKey]');
-  window.addEventListener('popstate', handlePopstate);
+  window.addEventListener('popstate', (e) => navigate(e.state.pathToMove, e.state.data));
   document.forms.search.addEventListener('submit', debounce(handleSearchEvent, 400));
   $movieList.addEventListener('click', showMovieDetail);
   $backDrop.addEventListener('click', handleModalClick);
@@ -50,10 +49,6 @@ const addEventListeners = () => {
   $confirm.addEventListener('click', handleConfirmClick);
   $bookmark.addEventListener('click', handleBookmarkClick);
   $searchInput.addEventListener('input', debounce(handleSearchEvent, 400));
-};
-
-const handlePopstate = (e) => {
-  navigate(e.state.pathToMove, e.state.data, true);
 };
 
 // 이벤트가 발생하면 timeout 뒤에 콜백을 실행한다.
