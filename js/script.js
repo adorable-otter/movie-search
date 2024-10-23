@@ -3,6 +3,7 @@ import { toggleModal, createMovieCard, setModalData, initBookmarkBtn } from './u
 import { bookmarks } from './bookmark.js';
 
 let selectedMovie;
+let page = 1;
 
 document.addEventListener('DOMContentLoaded', () => {
   addEventListeners();
@@ -10,12 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 const navigate = (pathToMove, data = {}) => {
-  const paths = {
-    '/': showPopMovieList,
-    '/bookmarks': showBookmarkList,
-    '/popMovies': showPopMovieList,
-    '/search': showSearchedMovieList,
-  };
   if (location.pathname === pathToMove) {
     history.replaceState({ pathToMove, data }, null, location.origin + pathToMove);
   } else {
@@ -31,6 +26,7 @@ const initPage = (pathName) => {
   if (pathName !== '/search') {
     $searchInput.value = '';
   }
+  page = 1;
   $cardList.replaceChildren();
 };
 
@@ -56,7 +52,7 @@ const addEventListeners = () => {
 const debounce = (callback, timeout) => {
   let timer;
   return (e) => {
-    e.preventDefault();
+    e && e.preventDefault();
     if (timer) clearTimeout(timer);
     timer = setTimeout(callback, timeout, e);
   };
@@ -95,9 +91,10 @@ const handleSearchEvent = (e) => {
 
 const showPopMovieList = async () => {
   const $cardList = document.querySelector('ul');
-  const url = 'https://api.themoviedb.org/3/movie/popular?language=ko&page=1';
+  const url = `https://api.themoviedb.org/3/movie/popular?language=ko&page=${page}`;
   const results = await requestDataList(url);
   results?.forEach((result) => $cardList.appendChild(createMovieCard(result)));
+  $cardList.lastChild && observer.observe($cardList.lastChild);
 };
 
 const showMovieDetail = async (e) => {
@@ -113,9 +110,10 @@ const showMovieDetail = async (e) => {
 const showSearchedMovieList = async ({ searchKey }) => {
   const $cardList = document.querySelector('ul');
   document.querySelector('[name=searchKey]').value = searchKey;
-  const url = `https://api.themoviedb.org/3/search/movie?query=${searchKey}&include_adult=false&language=ko&page=1`;
+  const url = `https://api.themoviedb.org/3/search/movie?query=${searchKey}&include_adult=false&language=ko&page=${page}`;
   const results = await requestDataList(url);
   results?.forEach((result) => $cardList.appendChild(createMovieCard(result)));
+  $cardList.lastChild && observer.observe($cardList.lastChild);
 };
 
 const showBookmarkList = () => {
@@ -127,3 +125,23 @@ const showBookmarkList = () => {
 const bookmark = ({ posterPath, overview, releaseDate, voteAverage, id, title }) => {
   bookmarks.add({ posterPath, overview, releaseDate, voteAverage, id, title });
 };
+
+const paths = {
+  '/': showPopMovieList,
+  '/bookmarks': showBookmarkList,
+  '/popMovies': showPopMovieList,
+  '/search': showSearchedMovieList,
+};
+
+const observer = new IntersectionObserver(
+  (entries, observer) => {
+    const searchKey = document.querySelector('[name=searchKey]').value;
+    const entry = entries[0];
+    if (entry.isIntersecting) {
+      page++;
+      paths[location.pathname]({ searchKey });
+      observer.unobserve(entry.target);
+    }
+  },
+  { threshold: 0.8 }
+);
