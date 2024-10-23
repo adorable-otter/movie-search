@@ -6,21 +6,24 @@ let selectedMovie;
 
 document.addEventListener('DOMContentLoaded', () => {
   addEventListeners();
-  navigate(location.pathname);
+  navigate(location.pathname, {}, false, true);
 });
 
-const navigate = (pathName, data = {}) => {
+const navigate = (pathToMove, data = {}, isPop = false, isInitialLoad = false) => {
   const paths = {
     '/': showPopMovieList,
     '/bookmarks': showBookmarkList,
     '/popMovies': showPopMovieList,
     '/search': showSearchedMovieList,
   };
-  if (pathName === '/' || location.pathname !== pathName) {
-    history.pushState({ pathName, data }, null, location.origin + pathName);
+
+  if (isInitialLoad) {
+    history.replaceState({ pathToMove, data }, null, location.origin + pathToMove);
+  } else if (isInitialLoad || (!isPop && location.pathname !== pathToMove)) {
+    history.pushState({ pathToMove, data }, null, location.origin + pathToMove);
   }
-  initPage(pathName);
-  paths[pathName](data);
+  initPage(pathToMove);
+  paths[pathToMove](data);
 };
 
 const initPage = (pathName) => {
@@ -39,7 +42,7 @@ const addEventListeners = () => {
   const $confirm = document.querySelector('[data-name=confirm]');
   const $bookmark = document.querySelector('[data-name=bookmark]');
   const $searchInput = document.querySelector('[name=searchKey]');
-  window.addEventListener('popstate', (e) => navigate(e.state.pathName, e.state.data));
+  window.addEventListener('popstate', handlePopstate);
   document.forms.search.addEventListener('submit', debounce(handleSearchEvent, 400));
   $movieList.addEventListener('click', showMovieDetail);
   $backDrop.addEventListener('click', handleModalClick);
@@ -47,6 +50,10 @@ const addEventListeners = () => {
   $confirm.addEventListener('click', handleConfirmClick);
   $bookmark.addEventListener('click', handleBookmarkClick);
   $searchInput.addEventListener('input', debounce(handleSearchEvent, 400));
+};
+
+const handlePopstate = (e) => {
+  navigate(e.state.pathToMove, e.state.data, true);
 };
 
 // 이벤트가 발생하면 timeout 뒤에 콜백을 실행한다.
@@ -114,7 +121,6 @@ const showSearchedMovieList = async ({ searchKey }) => {
   const url = `https://api.themoviedb.org/3/search/movie?query=${searchKey}&include_adult=false&language=ko&page=1`;
   const results = await requestDataList(url);
   results?.forEach((result) => $cardList.appendChild(createMovieCard(result)));
-  console.log('실행');
 };
 
 const showBookmarkList = () => {
