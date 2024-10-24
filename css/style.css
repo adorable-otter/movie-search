@@ -1,9 +1,6 @@
 body {
     margin: 0;
 }
-
-
-
 .header {
     background-color: black;
     color: aliceblue;
@@ -12,6 +9,11 @@ body {
     align-items: center;
     text-align: center;
     gap: 10px;
+}
+
+.header__title {
+    width: 70%;
+    cursor: pointer;
 }
 
 .header__form {

@@ -46,6 +46,7 @@ const addEventListeners = () => {
   const $confirm = document.querySelector('[data-name=confirm]');
   const $bookmark = document.querySelector('[data-name=bookmark]');
   const $searchInput = document.querySelector('[name=searchKey]');
+  const $headerTitle = document.querySelector('[data-name=header-title]');
   window.addEventListener('popstate', (e) => navigate(e.state.pathToMove, e.state.data));
   document.forms.search.addEventListener('submit', debounce(handleSearchEvent, 400));
   $movieList.addEventListener('click', showMovieDetail);
@@ -54,6 +55,7 @@ const addEventListeners = () => {
   $confirm.addEventListener('click', handleConfirmClick);
   $bookmark.addEventListener('click', handleBookmarkClick);
   $searchInput.addEventListener('input', debounce(handleSearchEvent, 400));
+  $headerTitle.addEventListener('click', () => navigate('/'));
 };
 
 // 이벤트가 발생하면 timeout 뒤에 콜백을 실행한다.
