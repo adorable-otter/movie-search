@@ -93,7 +93,7 @@ const handleConfirmClick = (e) => {
   }
 };
 
-const handleSearchEvent = (e) => {
+const handleSearchEvent = () => {
   const searchKey = document.querySelector('[name=searchKey]').value;
   navigate('/search', { searchKey });
 };
@@ -116,8 +116,9 @@ const showMovieDetail = async (e) => {
   initBookmarkBtn(movieId);
 };
 
-const showSearchedMovieList = async ({ searchKey }) => {
+const showSearchedMovieList = async (data) => {
   const $cardList = document.querySelector('ul');
+  const searchKey = data.searchKey ? data.searchKey : '';
   document.querySelector('[name=searchKey]').value = searchKey;
   const url = `https://api.themoviedb.org/3/search/movie?query=${searchKey}&include_adult=false&language=ko&page=${pageSelector.next()}`;
   const results = await requestDataList(url);
